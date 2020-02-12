@@ -1,0 +1,28 @@
+{
+  "name": "metricascapacity-repository",
+  "version": "1.0.0",
+  "description": "Camada de persistência usada para gravar dados das vms e maquinas fisicas",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js",
+    "dev": "nodemon --inspect index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://NET002PRDLNX395.dcing.corp/Claro-Brasil/ArqInfra/PortalArqInfra/metricascapacity-batch.git"
+  },
+  "author": "Claro BR",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "consign": "^0.1.6",
+    "express": "^4.17.1",
+    "mysql": "^2.18.1"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-es2015": "^6.24.1",
+    "nodemon": "^2.0.2"
+  }
+}
