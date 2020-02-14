@@ -1,43 +1,67 @@
-const Aplicacao = require('../repository/aplicacao.repository')
+const Aplicacao = require('../repository/aplicacao.repository');
+const moment = require('moment');
 
 module.exports = app => {
 
     const { executaSql }  = require('../infraestrutura/conexao');
     
     app.get('/api/repository/aplicacao', (req, res) => {        
-        
-        var sql = 'select * from aplicacao'
-        var data;
+        Aplicacao.lista(res);
+    });
 
-        executaSql(sql, function(result){ 
-            console.log( 'Data : ' + result);
-            var getKeys = function(result){
-                var keys = [];
-                for(var key in result){
-                   keys.push(key);
-                }
-                return keys;
-             }
-            //var keys = Object.keys(result);
-            console.log("keys"+getKeys);
-            data = result;
-          });
-        ;
-        //res.json('teste post '+req.body);
-        //res.json('teste get ' + result);
-        //res.json('teste get ' + data);
+    app.get('/api/repository/aplicacao/:id', (req, res) => {  
+        
+        const id = parseInt(req.params.id);
+        
+        Aplicacao.listaPorId(res, id)
     });
 
     app.post('/api/repository/aplicacao', (req, res) => {
-        console.log('teste 2 '+req.body);
-        console.log(JSON.stringify(req.body, null, 2));
         const aplicacao  = req.body;
-        aplicacao.data_criacao = new Date();
-        aplicacao.data_alteracao = new Date();
-        aplicacao.usuario_criacao = '93242290';
-        aplicacao.usuario_alteracao = '93242290';
-        Aplicacao.adiciona(aplicacao);
-        console.log('teste post '+req.body);
-        res.send("Post aplicacao");
+        const data_atual  = moment(new Date(), 'DD/MM/YYYY').format('YYYY-MM-DD HH:MM:SS') ;
+        const usuario = '93242290';
+        const dataEhValida = moment(data_atual).isValid();
+        console.log(dataEhValida);
+        const usuarioEhValido = usuario.length>2;
+
+        const validacoes = [
+            {
+                nome: "data",
+                valido: dataEhValida,
+                mensagem: "data deve ser maior ou igual a data atual"
+            },
+            {
+                nome: 'usuario',
+                valido: usuarioEhValido,
+                mensagem: "Usuario deve ter mais que 2 caracteres"
+            }
+        ]
+
+        const erros = validacoes.filter(campo => !campo.valido);
+        const existemErros = erros.length;
+
+        if(existemErros){
+            res.status(400).json(erros);
+        }else{
+            aplicacao.data_criacao = data_atual;
+            aplicacao.data_alteracao = data_atual;
+            aplicacao.usuario_criacao = usuario;
+            aplicacao.usuario_alteracao = usuario;
+            Aplicacao.adiciona(aplicacao, res);
+        }
+    });
+
+    app.patch('/api/repository/aplicacao/:id', (req, res) => {  
+        
+        const id = parseInt(req.params.id);
+        const valores = req.body;
+        console.log(req.body);
+        Aplicacao.altera(res, id, valores);
+    });
+
+    app.delete('/api/repository/aplicacao/:id', (req, res) => {  
+        
+        const id = parseInt(req.params.id);
+        Aplicacao.deleta(res, id);
     });
   }
